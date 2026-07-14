@@ -6,12 +6,12 @@ from .. import models, schemas
 
 router = APIRouter(prefix="/api/players", tags=["Players"])
 
-@router.get("/", response_model=List[schemas.Player])
+@router.get("", response_model=List[schemas.Player])
 def get_players(db: Session = Depends(get_db)):
     players = db.query(models.Player).all()
     return players
 
-@router.post("/", response_model=schemas.Player)
+@router.post("", response_model=schemas.Player)
 def create_player(player: schemas.PlayerCreate, db: Session = Depends(get_db)):
     db_player = models.Player(**player.model_dump())
     db.add(db_player)

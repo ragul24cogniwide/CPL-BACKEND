@@ -6,12 +6,12 @@ from .. import models, schemas
 
 router = APIRouter(prefix="/api/teams", tags=["Teams"])
 
-@router.get("/", response_model=List[schemas.Team])
+@router.get("", response_model=List[schemas.Team])
 def get_teams(db: Session = Depends(get_db)):
     teams = db.query(models.Team).options(joinedload(models.Team.players)).all()
     return teams
 
-@router.post("/", response_model=schemas.Team)
+@router.post("", response_model=schemas.Team)
 def create_team(team: schemas.TeamCreate, db: Session = Depends(get_db)):
     team_data = team.model_dump(exclude={"playerIds"})
     db_team = models.Team(**team_data)

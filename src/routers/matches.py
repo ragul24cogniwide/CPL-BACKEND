@@ -6,12 +6,12 @@ from .. import models, schemas
 
 router = APIRouter(prefix="/api/matches", tags=["Matches"])
 
-@router.get("/", response_model=List[schemas.Match])
+@router.get("", response_model=List[schemas.Match])
 def get_matches(db: Session = Depends(get_db)):
     matches = db.query(models.Match).all()
     return matches
 
-@router.post("/", response_model=schemas.Match)
+@router.post("", response_model=schemas.Match)
 def create_match(match: schemas.MatchCreate, db: Session = Depends(get_db)):
     db_match = models.Match(**match.model_dump())
     db.add(db_match)

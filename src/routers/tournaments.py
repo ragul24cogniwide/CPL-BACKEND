@@ -6,12 +6,12 @@ from .. import models, schemas
 
 router = APIRouter(prefix="/api/tournaments", tags=["Tournaments"])
 
-@router.get("/", response_model=List[schemas.Tournament])
+@router.get("", response_model=List[schemas.Tournament])
 def get_tournaments(db: Session = Depends(get_db)):
     tournaments = db.query(models.Tournament).options(joinedload(models.Tournament.teams)).all()
     return tournaments
 
-@router.post("/", response_model=schemas.Tournament)
+@router.post("", response_model=schemas.Tournament)
 def create_tournament(tournament: schemas.TournamentCreate, db: Session = Depends(get_db)):
     tournament_data = tournament.model_dump(exclude={"teamIds"})
     db_tournament = models.Tournament(**tournament_data)
