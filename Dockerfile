@@ -1,29 +1,11 @@
-FROM node:18-alpine AS builder
+FROM python:3.11-slim
 
 WORKDIR /app
 
-# Copy package.json and install dependencies
-COPY package*.json ./
-COPY prisma ./prisma/
-RUN npm install
+COPY requirements.txt .
 
-# Generate Prisma client
-RUN npx prisma generate
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code and build
 COPY . .
-RUN npx tsc
 
-# Production image
-FROM node:18-alpine
-
-WORKDIR /app
-
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/prisma ./prisma
-
-EXPOSE 3000
-
-CMD ["npm", "run", "start"]
+CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "3000"]
