@@ -57,6 +57,7 @@ class Team(TeamBase):
     createdAt: datetime
     updatedAt: datetime
     players: List[Player] = []
+    playerIds: List[str] = []
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -86,6 +87,7 @@ class Tournament(TournamentBase):
     createdAt: datetime
     updatedAt: datetime
     teams: List[Team] = []
+    teamIds: List[str] = []
     
     model_config = ConfigDict(from_attributes=True)
 

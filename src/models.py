@@ -53,6 +53,11 @@ class Team(Base):
     viceCaptain = relationship("Player", foreign_keys=[viceCaptainId], back_populates="viceCaptainOf")
     tournaments = relationship("Tournament", secondary=tournament_teams, back_populates="teams")
 
+    @property
+    def playerIds(self):
+        return [p.id for p in self.players]
+
+
 
 class Tournament(Base):
     __tablename__ = "tournaments"
@@ -68,6 +73,11 @@ class Tournament(Base):
 
     teams = relationship("Team", secondary=tournament_teams, back_populates="tournaments")
     matches = relationship("Match", back_populates="tournament")
+
+    @property
+    def teamIds(self):
+        return [t.id for t in self.teams]
+
 
 
 class Match(Base):
