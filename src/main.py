@@ -1,7 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .database import engine, Base
-from .routers import players, teams, tournaments, matches, auth
+from sqlalchemy.orm import Session
+from .database import engine, Base, SessionLocal
+from . import models
+from .routers import players, teams, tournaments, matches, auth, users
+from .auth_utils import get_password_hash
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -10,6 +13,24 @@ load_dotenv()
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="CPL Backend API", version="1.0.0")
+
+@app.on_event("startup")
+def seed_admin_user():
+    db: Session = SessionLocal()
+    try:
+        admin_user = db.query(models.User).filter(models.User.username == "admin").first()
+        if not admin_user:
+            print("Seeding default admin user...")
+            hashed_password = get_password_hash("admin@123")
+            new_admin = models.User(
+                username="admin",
+                hashed_password=hashed_password,
+                role="admin"
+            )
+            db.add(new_admin)
+            db.commit()
+    finally:
+        db.close()
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,6 +41,7 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
+app.include_router(users.router)
 app.include_router(players.router)
 app.include_router(teams.router)
 app.include_router(tournaments.router)

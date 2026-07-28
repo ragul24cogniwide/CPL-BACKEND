@@ -8,7 +8,9 @@ from datetime import datetime
 class UserCreate(BaseModel):
     username: str
     password: str
-    role: Optional[str] = "user" # 'admin' or 'user'
+
+class UserRoleUpdate(BaseModel):
+    role: str # 'admin' or 'user'
 
 class UserResponse(BaseModel):
     id: str

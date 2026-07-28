@@ -23,7 +23,7 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     new_user = models.User(
         username=user.username,
         hashed_password=hashed_password,
-        role=user.role if user.role in ["admin", "user"] else "user"
+        role="user"
     )
     db.add(new_user)
     db.commit()
