@@ -12,6 +12,13 @@ def get_matches(db: Session = Depends(get_db), current_user: models.User = Depen
     matches = db.query(models.Match).all()
     return matches
 
+@router.get("/{match_id}", response_model=schemas.Match)
+def get_match(match_id: str, db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
+    db_match = db.query(models.Match).filter(models.Match.id == match_id).first()
+    if not db_match:
+        raise HTTPException(status_code=404, detail="Match not found")
+    return db_match
+
 @router.post("", response_model=schemas.Match)
 def create_match(match: schemas.MatchCreate, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin_user)):
     db_match = models.Match(**match.model_dump())
