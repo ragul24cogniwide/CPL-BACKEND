@@ -18,6 +18,17 @@ tournament_teams = Table(
     Column('team_id', String, ForeignKey('teams.id', ondelete="CASCADE"), primary_key=True)
 )
 
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    username = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    role = Column(String, nullable=False, default="user") # 'admin' or 'user'
+    createdAt = Column(DateTime(timezone=True), server_default=func.now())
+    updatedAt = Column(DateTime(timezone=True), onupdate=func.now(), server_default=func.now())
+
+
 class Player(Base):
     __tablename__ = "players"
 

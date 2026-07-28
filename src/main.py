@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .database import engine, Base
-from .routers import players, teams, tournaments, matches
+from .routers import players, teams, tournaments, matches, auth
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -19,6 +19,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth.router)
 app.include_router(players.router)
 app.include_router(teams.router)
 app.include_router(tournaments.router)

@@ -3,6 +3,31 @@ from typing import Optional, List, Any, Dict
 from datetime import datetime
 
 # ========================
+# AUTH / USERS
+# ========================
+class UserCreate(BaseModel):
+    username: str
+    password: str
+    role: Optional[str] = "user" # 'admin' or 'user'
+
+class UserResponse(BaseModel):
+    id: str
+    username: str
+    role: str
+    createdAt: datetime
+    updatedAt: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: Optional[str] = None
+    role: Optional[str] = None
+
+# ========================
 # PLAYERS
 # ========================
 class PlayerBase(BaseModel):

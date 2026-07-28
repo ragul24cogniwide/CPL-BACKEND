@@ -3,16 +3,17 @@ from sqlalchemy.orm import Session, joinedload
 from typing import List
 from ..database import get_db
 from .. import models, schemas
+from ..auth_utils import get_current_user, get_current_admin_user
 
 router = APIRouter(prefix="/api/tournaments", tags=["Tournaments"])
 
 @router.get("", response_model=List[schemas.Tournament])
-def get_tournaments(db: Session = Depends(get_db)):
+def get_tournaments(db: Session = Depends(get_db), current_user: models.User = Depends(get_current_user)):
     tournaments = db.query(models.Tournament).options(joinedload(models.Tournament.teams)).all()
     return tournaments
 
 @router.post("", response_model=schemas.Tournament)
-def create_tournament(tournament: schemas.TournamentCreate, db: Session = Depends(get_db)):
+def create_tournament(tournament: schemas.TournamentCreate, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin_user)):
     tournament_data = tournament.model_dump(exclude={"teamIds"})
     db_tournament = models.Tournament(**tournament_data)
     
@@ -26,7 +27,7 @@ def create_tournament(tournament: schemas.TournamentCreate, db: Session = Depend
     return db_tournament
 
 @router.put("/{tournament_id}", response_model=schemas.Tournament)
-def update_tournament(tournament_id: str, tournament: schemas.TournamentUpdate, db: Session = Depends(get_db)):
+def update_tournament(tournament_id: str, tournament: schemas.TournamentUpdate, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin_user)):
     db_tournament = db.query(models.Tournament).options(joinedload(models.Tournament.teams)).filter(models.Tournament.id == tournament_id).first()
     if not db_tournament:
         raise HTTPException(status_code=404, detail="Tournament not found")
@@ -44,7 +45,7 @@ def update_tournament(tournament_id: str, tournament: schemas.TournamentUpdate, 
     return db_tournament
 
 @router.delete("/{tournament_id}")
-def delete_tournament(tournament_id: str, db: Session = Depends(get_db)):
+def delete_tournament(tournament_id: str, db: Session = Depends(get_db), current_admin: models.User = Depends(get_current_admin_user)):
     db_tournament = db.query(models.Tournament).filter(models.Tournament.id == tournament_id).first()
     if not db_tournament:
         raise HTTPException(status_code=404, detail="Tournament not found")
